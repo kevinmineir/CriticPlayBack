@@ -22,6 +22,8 @@ cadastroRouter.post('/', async (req,res) => {
       criarUser(username,email, senhaHashed)
 
       res.status(200).send('Conta CriticZone criada com sucesso')
+
+      
     }catch (err) {
       console.log("Erro ao cadastrar :", err)
       res.status(500).json({Error: `Erro ao cadastrar ${err}`})

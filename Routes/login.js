@@ -41,10 +41,9 @@ loginRouter.post('/',async (req, res) =>{
     return res.status(200).json({
         message: 'Login realiado com sucesso', token ,
         user: {
-            id: user.id,
-            email: user.senha,
+            id: user.id ,
+            email: user.senha ,
             name: user.username
-
         }
     })
     
