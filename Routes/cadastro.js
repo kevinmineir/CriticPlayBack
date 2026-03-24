@@ -4,6 +4,7 @@ const cadastroRouter = Router()
 const connectDatabase = require('../database/connectDatabase.js')
 
 const { criarUser , buscarUser , hashSenha } = require('../controllers/UserFunctions.js')
+const { gerarToken, hashToken } = require('../controllers/LoginToken.js')
 
 connectDatabase()
 
@@ -16,10 +17,23 @@ cadastroRouter.post('/', async (req,res) => {
       const user = await buscarUser(email)
 
       if (user) {
-        return res.status(401).json({Error: 'Usuario já possui conta CriticZone'})
+        return res.status(401).json({Error: 'Email já possui conta CriticZone'})
       }
 
-      criarUser(username,email, senhaHashed)
+      const novoUserId = await criarUser(username,email, senhaHashed)
+
+      const token = gerarToken()
+      const tokenHashed = hashToken(token)
+
+      const validade = new Date()
+      validade.setDate(validade.getDate() + 15)
+
+      await connectDatabase('user_tokens').insert({
+        user_id: novoUserId ,
+        token_hash: tokenHashed,
+        expira_em: validade
+      }
+      )
 
       res.status(200).send('Conta CriticZone criada com sucesso')
 

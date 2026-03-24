@@ -26,13 +26,17 @@ async function alterarSenhaUser(id) {
 async function criarUser(username,email,senha) {
   try{
     
-    await connectDatabase("users").insert({
+    const user = await connectDatabase("users").insert({
       username,
       email,
       senha
     })
 
     console.log('Usuário criado')
+
+    const id = user[0].toString();
+
+    return id // retorna o ID no banco
 
   } catch(err) {
     console.log("Erro ao criar usuário:", err)
@@ -55,13 +59,14 @@ async function deletarUser(id){
 async function buscarUser(email) {
   try{
 
-    const userExiste = await connectDatabase("users")
+    const user = await connectDatabase("users")
       .where({ email })
       .first()
-    return userExiste
+
+    return user
 
   } catch(err) {
-    console.log(`falha ao buscar user com email ${email} : `, err)
+    console.log(`falha ao buscar user`, err)
   }
 }
 

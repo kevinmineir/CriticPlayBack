@@ -20,7 +20,7 @@ loginRouter.post('/',async (req, res) =>{
         return res.status(401).json({Error: 'Credenciais Invalidas'})
     }
 
-    const senhaOk = await bcrypt.compare(senha, user.senha)
+    const senhaOk = await bcrypt.compare(senha, user.senha) // senha digitada , senha hash
 
     if (!senhaOk) {
         return res.status(401).json({Error: 'Credenciais Invalidas'})
@@ -32,14 +32,18 @@ loginRouter.post('/',async (req, res) =>{
     const validade = new Date();
     validade.setDate(validade.getDate() + 15)  // validade de 15 dias para o token
 
-    await knex('user_tokens').insert({
+    await connectDatabase('user_tokens')  // deleta tokens antigos (se tiver claro)
+      .where({ user_id: user.id })
+      .del()
+
+    await connectDatabase('user_tokens').insert({
         user_id: user.id ,
         token_hash: tokenHashed ,
         expira_em: validade
     })
 
     return res.status(200).json({
-        message: 'Login realiado com sucesso', token ,
+        message: 'Login realizado com sucesso', token ,
         user: {
             id: user.id ,
             email: user.senha ,
