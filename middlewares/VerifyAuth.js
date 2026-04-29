@@ -1,7 +1,7 @@
 const { hashToken } = require('../controllers/LoginToken.js')
 const connectDatabase = require('../database/connectDatabase.js')
 
-async function authMiddleware(req, res, next) {
+async function verifyAuth(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -18,7 +18,7 @@ async function authMiddleware(req, res, next) {
     const token = parts[1];
     const tokenHash = hashToken(token);
 
-    const session = await connectDatabase('user_sessions')
+    const session = await connectDatabase('user_tokens')
       .where({ token_hash: tokenHash })
       .first();
 
@@ -26,8 +26,8 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ error: 'Sessão inválida' });
     }
 
-    if (new Date(session.expires_at) < new Date()) {
-      await db('user_sessions').where({ id: session.id }).del();
+    if (new Date(session.expira_em) < new Date()) {
+      await db('user_tokens').where({ id: session.id }).delete();
       return res.status(401).json({ error: 'Sessão expirada' });
     }
 
@@ -46,3 +46,5 @@ async function authMiddleware(req, res, next) {
     return res.status(500).json({ error: 'Erro ao autenticar' });
   }
 }
+
+module.exports = verifyAuth

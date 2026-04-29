@@ -43,14 +43,9 @@ loginRouter.post('/',async (req, res) =>{
     })
 
     return res.status(200).json({
-        message: 'Login realizado com sucesso', token ,
-        user: {
-            id: user.id ,
-            email: user.senha ,
-            name: user.username
-        }
+        message: 'Login realizado com sucesso',
+        token: token
     })
-    
 
     } catch(err) {
         res.status(500).json({Error: `Erro ao fazer login ${err}`})
