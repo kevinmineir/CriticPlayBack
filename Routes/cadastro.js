@@ -11,7 +11,7 @@ connectDatabase()
 cadastroRouter.post('/', async (req,res) => {
     try{
       const {username , email , senha } = req.body
-
+      
       const senhaHashed = await hashSenha(senha)
       
       const user = await buscarUser(email)
