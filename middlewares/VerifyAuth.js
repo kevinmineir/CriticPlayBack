@@ -27,11 +27,11 @@ async function verifyAuth(req, res, next) {
     }
 
     if (new Date(session.expira_em) < new Date()) {
-      await db('user_tokens').where({ id: session.id }).delete();
+      await connectDatabase('user_tokens').where({ id: session.id }).delete();
       return res.status(401).json({ error: 'Sessão expirada' });
     }
 
-    const user = await db('users').where({ id: session.user_id }).first();
+    const user = await connectDatabase('users').where({ id: session.user_id }).first();
 
     if (!user) {
       return res.status(401).json({ error: 'Usuário não encontrado' });
